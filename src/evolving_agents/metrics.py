@@ -11,5 +11,7 @@ def thought_payoff(G, trace):
         if node not in seen:        # first time reaching this belief
             seen.add(node)
             collected += G.nodes[node]["value"]
-        # revisits fall through and collect nothing
     return round(collected, 2)
+
+
+

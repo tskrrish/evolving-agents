@@ -30,3 +30,17 @@ def draw_graph(G, path=None, title="Belief graph"):
     plt.tight_layout()
     plt.show()              
  
+def draw_payoff_curves(curves, labels=None):
+    """Plot one or more payoff curves. Each curve is a list of cumulative
+    payoffs over steps. A flat stretch = the thought stalled."""
+    plt.figure(figsize=(8, 5))
+    for i, curve in enumerate(curves):
+        label = labels[i] if labels else f"thought {i+1}"
+        plt.plot(range(len(curve)), curve, marker="o", label=label)
+    plt.xlabel("step")
+    plt.ylabel("cumulative payoff")
+    plt.title("Payoff curves (flat stretch = a stall)")
+    plt.legend()
+    plt.grid(True, alpha=0.3)
+    plt.tight_layout()
+    plt.show()
