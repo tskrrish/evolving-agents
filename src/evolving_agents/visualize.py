@@ -44,3 +44,22 @@ def draw_payoff_curves(curves, labels=None):
     plt.grid(True, alpha=0.3)
     plt.tight_layout()
     plt.show()
+
+def draw_payoff_distributions(datasets, labels):
+    """Plot histograms of final-payoff distributions for several approaches,
+    side by side. Each dataset is a list of final payoffs (e.g. 500 numbers)."""
+    fig, axes = plt.subplots(1, len(datasets), figsize=(5 * len(datasets), 4),
+                             sharey=True)
+    if len(datasets) == 1:
+        axes = [axes]
+    for ax, data, label in zip(axes, datasets, labels):
+        ax.hist(data, bins=20, range=(7, 16), color="#6a9fd4", edgecolor="white")
+        mean = sum(data) / len(data)
+        ax.axvline(mean, color="red", linestyle="--", linewidth=1.5,
+                   label=f"mean {mean:.2f}")
+        ax.set_title(label)
+        ax.set_xlabel("final payoff")
+        ax.legend()
+    axes[0].set_ylabel("number of thoughts (of 500)")
+    plt.tight_layout()
+    plt.show()
