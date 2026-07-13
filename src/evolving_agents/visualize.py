@@ -79,3 +79,47 @@ def draw_evolution(history):
     plt.grid(True, alpha=0.3)
     plt.tight_layout()
     plt.show()
+
+
+import networkx as nx   # (already at top of visualize.py)
+
+
+def draw_culture_grid(pop, coords, grid, threshold=0.15):
+    """Color each grid cell by its cultural group. Two agents are the 'same
+    culture' if their wiring similarity exceeds `threshold`. Contiguous similar
+    cells form regions — visible as same-colored patches."""
+    from evolving_agents.culture import graph_similarity
+
+    # 1. build a similarity graph: connect cells whose agents are similar enough
+    sim_graph = nx.Graph()
+    sim_graph.add_nodes_from(coords)
+    for c in coords:
+        x, y = c
+        for dx, dy in [(1, 0), (0, 1)]:                  # check right & down neighbors
+            nb = (x + dx, y + dy)
+            if nb in pop and graph_similarity(pop[c], pop[nb]) > threshold:
+                sim_graph.add_edge(c, nb)
+
+    # 2. find connected groups (each group = one "culture")
+    groups = {}
+    for i, component in enumerate(nx.connected_components(sim_graph)):
+        for cell in component:
+            groups[cell] = i
+    n_groups = len(set(groups.values()))
+
+    # 3. build a 2D array of group-ids and draw it as a colored grid
+    grid_map = [[groups[(x, y)] for x in range(grid)] for y in range(grid)]
+
+    plt.figure(figsize=(6, 6))
+    plt.imshow(grid_map, cmap="tab20", origin="upper")
+    plt.title(f"Cultural regions ({n_groups} distinct groups, threshold={threshold})")
+    # annotate each cell with its group number
+    for y in range(grid):
+        for x in range(grid):
+            plt.text(x, y, str(grid_map[y][x]), ha="center", va="center",
+                     color="white", fontsize=9)
+    plt.xticks(range(grid))
+    plt.yticks(range(grid))
+    plt.tight_layout()
+    plt.show()
+    return n_groups
