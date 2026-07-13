@@ -63,3 +63,19 @@ def draw_payoff_distributions(datasets, labels):
     axes[0].set_ylabel("number of thoughts (of 500)")
     plt.tight_layout()
     plt.show()
+
+def draw_evolution(history):
+    """Plot fitness over generations. history = list of (gen, mean, best)."""
+    gens = [h[0] for h in history]
+    means = [h[1] for h in history]
+    bests = [h[2] for h in history]
+    plt.figure(figsize=(8, 5))
+    plt.plot(gens, means, marker="o", label="mean fitness")
+    plt.plot(gens, bests, marker="s", label="best fitness")
+    plt.xlabel("generation")
+    plt.ylabel("fitness")
+    plt.title("Evolution: fitness over generations")
+    plt.legend()
+    plt.grid(True, alpha=0.3)
+    plt.tight_layout()
+    plt.show()
