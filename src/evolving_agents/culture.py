@@ -13,14 +13,28 @@ def graph_similarity(g1, g2):
     return len(e1 & e2) / len(e1 | e2)     # shared edges / total distinct edges
 
 
-def transmit(fitter, weaker, rng):
-    """The weaker agent copies one edge it lacks from the fitter agent.
-    This is 'copy-from-fitter' — imitating whoever's doing better."""
+#def transmit(fitter, weaker, rng):
+ #   """The weaker agent copies one edge it lacks from the fitter agent.
+  #  This is 'copy-from-fitter' — imitating whoever's doing better."""
+   # candidates = [e for e in fitter.edges if not weaker.has_edge(*e)]
+    #if not candidates:
+     #   return
+    #a, b = rng.choice(candidates)
+    #weaker.add_edge(a, b, weight=fitter[a][b]["weight"])
+
+
+def transmit(fitter, weaker, rng, homophily=0.0):
+    """The weaker agent copies one edge from the fitter agent — but only if the
+    two are already at least `homophily` similar. homophily=0 means always copy
+    (pure conformity); higher means agents only imitate others already like them."""
+    if homophily > 0 and graph_similarity(fitter, weaker) < homophily:
+        return                      # too dissimilar to influence each other — barrier
     candidates = [e for e in fitter.edges if not weaker.has_edge(*e)]
     if not candidates:
         return
     a, b = rng.choice(candidates)
     weaker.add_edge(a, b, weight=fitter[a][b]["weight"])
+
 
 def run_culture(grid=5, rounds=30, n_thoughts=60, seed=0):
     """Agents on a grid×grid lattice exchange beliefs with neighbors each round.
@@ -72,7 +86,7 @@ def run_culture(grid=5, rounds=30, n_thoughts=60, seed=0):
             "clustering": clustering,
         }
 
-def run_culture_with_snapshot(grid=5, rounds=30, n_thoughts=60, seed=0):
+def run_culture_with_snapshot(grid=5, rounds=30, n_thoughts=60, seed=0, homophily =0.0):
     """Same as run_culture, but returns (history, final_pop, coords) so we can
     visualize the final grid of agents."""
     rng = random.Random(seed)
